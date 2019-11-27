@@ -13,5 +13,5 @@ app.post('/messages', handlers.validateMessage(), handlers.postMessage);
 
 // listen for requests :)
 const listener = app.listen(process.env.PORT || 8000, process.env.HOST || '0.0.0.0', () => {
-  logger.info(`Your app is listening on port ${listener.address().port}`);
+	logger.info(`Your app is listening on port ${listener.address().port}`);
 });
