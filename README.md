@@ -2,6 +2,10 @@
 
 <blockquote align="center">Privately message with your GitHub followers</blockquote>
 
+<p align="center">
+  <a href="https://github.com/github-developer/octochat-aws"><img alt="GitHub Actions status" src="https://github.com/github-developer/octochat-aws/workflows/Build/badge.svg"></a>
+</p>
+
 ## Usage
 
 <img width="1072" alt="example-octochat" src="https://user-images.githubusercontent.com/27806/69747446-020e6900-110c-11ea-9a4b-41fc59a9bb6f.png">
