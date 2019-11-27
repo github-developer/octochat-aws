@@ -51,13 +51,12 @@ const messagesSentList = async (fromId) => {
 // get messages between two user ids
 const messagesBetween = async (user1, user2) => {
   // gather messages from user2 sent to user1
-  const received = (await messagesReceivedList(user1)).filter(msg => msg.fromId == user2);
+  const received = (await messagesReceivedList(user1)).filter(msg => parseInt(msg.fromId, 10) === parseInt(user2, 10));
   // gather messages to user2 sent by user1
-  const sent = (await messagesSentList(user1)).filter(msg => msg.toId == user2);
+  const sent = (await messagesSentList(user1)).filter(msg => parseInt(msg.toId, 10) === parseInt(user2, 10));
   // combine into one array and sort by received date
-  return [].concat(received, sent).sort((a,b) => new Date(a.receivedAt) - new Date(b.receivedAt));
+  return [].concat(received, sent).sort((a, b) => new Date(a.receivedAt) - new Date(b.receivedAt));
 };
-
 
 module.exports = {
   messageAdd,

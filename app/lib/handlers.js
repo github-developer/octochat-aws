@@ -14,15 +14,6 @@ const axios = require('axios');
 // (...we want JSON by default)
 axios.defaults.headers.common.Accept = 'application/json';
 
-const isFollower = (person, request) => {
-  const id = person.split(' ')[0];
-  const index = request.req.session.viewData.followers.findIndex(follower => +follower.id === +id);
-  if (index < 0) {
-    throw new Error('Error: follower not found');
-  }
-  return true;
-};
-
 // server-side validation rules for incoming new message form
 module.exports.validateMessage = () => {
   return [
@@ -53,18 +44,18 @@ module.exports.getRoot = async (request, response) => {
   });
 };
 
-module.exports.getConversation = async (request, response) => { 
+module.exports.getConversation = async (request, response) => {
   if (request.session.token) {
     const userId = request.params.userId; // github user id
     const messages = await model.messagesBetween(request.session.viewData.user.id, userId);
-    
+
     // expose authenticated user to template via viewData
     request.session.viewData.messages = messages;
     request.session.viewData.conversation = userId;
-    request.session.viewData.selectedFollower = request.session.viewData.followers.find(follower => follower.id == userId);
+    request.session.viewData.selectedFollower = request.session.viewData.followers.find(follower => parseInt(follower.id, 10) === parseInt(userId, 10));
 
     // render and send the page
-    response.render("index", {
+    response.render('index', {
       title: process.env.TITLE,
       ...request.session.viewData
     });
@@ -92,7 +83,6 @@ module.exports.getSent = async (request, response) => {
 
 module.exports.postMessage = async (request, response) => {
   const message = request.body.message;
-  const follower = request.body.follower;
 
   if (validationResult(request).array().length) {
     // error
