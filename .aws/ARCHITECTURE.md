@@ -1,6 +1,6 @@
 # High-level architecture
 
-![](ARCHITECTURE.md)
+![](ARCHITECTURE.png)
 
 For more information about these services, please see:
 
