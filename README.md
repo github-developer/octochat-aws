@@ -10,7 +10,7 @@
 
 ## About
 
-This app is intended _for demonstration use only_, and is deployed using [Amazon Web Services](https://aws.amazon.com/). The architecture is explained at a high-level [here](.aws/ARCHITECTURE.md).
+This app is intended _for demonstration use only_, and is deployed using [Amazon Web Services](https://aws.amazon.com/). The architecture is explained at a high-level [here](docs/ARCHITECTURE.md).
 
 ## Development
 
@@ -29,3 +29,11 @@ Use the included [`server.sh`](script/server.sh) script to run the development s
 ```
 
 The application will be available at [http://localhost:49160/](http://localhost:49160/).
+
+## Contributions
+
+We welcome contributions! See how to [contribute](docs/CONTRIBUTING.md).
+
+## License
+
+[MIT](docs/LICENSE.md)
