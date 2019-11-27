@@ -67,57 +67,43 @@
 
       <div class="Box">
         <div class="Box-header">
-            <details class="dropdown details-reset details-overlay d-inline-block ml-1">
-            <summary class="btn" aria-haspopup="true">
-              {{ selectedBox if selectedBox else "Inbox" }}
-              <div class="dropdown-caret"></div>
-            </summary>
-            <ul class="dropdown-menu dropdown-menu-se">
-              <li><a class="dropdown-item" href="/">Inbox</a></li>
-              <li><a class="dropdown-item" href="/sent">Sent</a></li>
-            </ul>
-          </details>
-        </div>
-        {% if messages %}
+            Messages with
+            <details class="dropdown details-reset details-overlay d-inline-block">
+              <summary class="btn" aria-haspopup="true">
+                {{ selectedFollower.login if selectedFollower else "Choose from followers..." }}
+                <div class="dropdown-caret"></div>
+              </summary>
+              <ul class="dropdown-menu dropdown-menu-se">
+                {% for follower in followers %}
+                <li><a class="dropdown-item" href="/messages/{{follower.id}}">{{ follower.login }}</a></li>
+                {% else %}
+                <div class="dropdown-header">No followers :-(</div>
+                {% endfor %}
+              </ul>
+            </details>
+          </div>
+        {% if conversation %}
         <div class="Box-body">
 
           {% for message in messages %}
 
-          <div class="inbox-message">
-            <div class="heading">
-              {% if selectedBox == 'Inbox' %}
-                From: <a href="https://github.com/{{ message.from }}">@{{ message.from }}</a>
-              {% else %}
-                To: <a href="https://github.com/{{ message.to }}">@{{ message.to }}</a>
-              {% endif %}
-            </div>
-            <div class="body">
-              {{ message.message }}
-            </div>
-            <div class="footer">
-              {{ message.receivedAt }}
-            </div>
+          <div class="message {{ is_from(message.from) }}">
+            {{ message.message }}
           </div>
 
           {% endfor %}
         </div>
-        <div class="Box-footer container">
+        <div class="Box-footer">
           <form method="post" action="/messages" class="d-table width-full">
-            <div class="d-table-cell col-2 pr-2">
-              <select name="follower" class="form-select width-full" aria-label="Important decision" required>
-                <option value="">New message to...</option>
-                {% for follower in followers %}
-                <option value="{{ follower.id }} {{ follower.login }}">{{ follower.login }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="d-table-cell col-9 pr-2">
-              <input class="form-control width-full" name="message" type="text" placeholder="Type a message..." aria-label="Message" required />
-            </div>
-            <div class="d-table-cell">
-              <button class="btn btn-primary width-full col-2" type="submit">
-                Send
-              </button>
+            <div class="d-table-cell col-12 pr-2">
+              <input
+                class="form-control width-full"
+                name="message"
+                type="text"
+                placeholder="Type a message..."
+                aria-label="Message"
+                required
+              />
             </div>
           </form>
         </div>

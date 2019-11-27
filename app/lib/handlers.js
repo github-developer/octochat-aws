@@ -14,26 +14,13 @@ const axios = require('axios');
 // (...we want JSON by default)
 axios.defaults.headers.common.Accept = 'application/json';
 
-const isFollower = (person, request) => {
-  const id = person.split(' ')[0];
-  const index = request.req.session.viewData.followers.findIndex(follower => +follower.id === +id);
-  if (index < 0) {
-    throw new Error('Error: follower not found');
-  }
-  return true;
-};
-
 // server-side validation rules for incoming new message form
 module.exports.validateMessage = () => {
   return [
     body('message')
       .not().isEmpty()
       .trim()
-      .escape(),
-    body('follower')
-      .not().isEmpty()
       .escape()
-      .custom(isFollower)
   ];
 };
 
@@ -44,6 +31,10 @@ module.exports.getRoot = async (request, response) => {
     // expose various parameters to template via viewData
     request.session.viewData.messages = messages;
     request.session.viewData.selectedBox = 'Inbox';
+    // empty out any conversation data
+    delete request.session.viewData.messages;
+    delete request.session.viewData.conversation;
+    delete request.session.viewData.selectedFollower;
   }
 
   // render and send the page
@@ -51,6 +42,26 @@ module.exports.getRoot = async (request, response) => {
     title: process.env.TITLE,
     ...request.session.viewData
   });
+};
+
+module.exports.getConversation = async (request, response) => {
+  if (request.session.token) {
+    const userId = request.params.userId; // github user id
+    const messages = await model.messagesBetween(request.session.viewData.user.id, userId);
+
+    // expose authenticated user to template via viewData
+    request.session.viewData.messages = messages;
+    request.session.viewData.conversation = userId;
+    request.session.viewData.selectedFollower = request.session.viewData.followers.find(follower => parseInt(follower.id, 10) === parseInt(userId, 10));
+
+    // render and send the page
+    response.render('index', {
+      title: process.env.TITLE,
+      ...request.session.viewData
+    });
+  } else {
+    return response.redirect('/');
+  }
 };
 
 module.exports.getSent = async (request, response) => {
@@ -72,21 +83,20 @@ module.exports.getSent = async (request, response) => {
 
 module.exports.postMessage = async (request, response) => {
   const message = request.body.message;
-  const follower = request.body.follower;
 
   if (validationResult(request).array().length) {
     // error
     response.redirect('/');
   } else {
     await model.messageAdd({
-      toId: follower.split(' ')[0],
-      to: follower.split(' ')[1],
+      toId: request.session.viewData.selectedFollower.id,
+      to: request.session.viewData.selectedFollower.login,
       fromId: request.session.viewData.user.id,
       from: request.session.viewData.user.login,
       message
     });
 
-    response.redirect('back');
+    response.redirect(`/messages/${request.session.viewData.selectedFollower.id}`);
   }
 };
 

@@ -4,6 +4,7 @@ const logger = require('./lib/logger');
 
 // set up handlers for each route
 app.get('/', handlers.getRoot);
+app.get('/messages/:userId', handlers.getConversation);
 app.get('/sent', handlers.getSent);
 app.get('/login', handlers.login);
 app.get('/logout', handlers.logout);
