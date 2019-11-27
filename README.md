@@ -36,4 +36,4 @@ We welcome contributions! See how to [contribute](docs/CONTRIBUTING.md).
 
 ## License
 
-[MIT](docs/LICENSE.md)
+[MIT](LICENSE.md)
