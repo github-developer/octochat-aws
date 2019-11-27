@@ -54,7 +54,11 @@ describe('App server', () => {
 
 		request.session = {
 			token: 'abc',
-			viewData: {}
+			viewData: {
+				user: {
+					id: 123456789
+				}
+			}
 		};
 
 		response = new Response();
