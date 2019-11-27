@@ -1,5 +1,8 @@
 {
   "name": "octochat",
+  "author": {
+    "name": "GitHub"
+  },
   "version": "0.0.1",
   "description": "A DEMO GitHub App to chat among octocats",
   "main": "server.js",
@@ -30,7 +33,7 @@
     "node": "12.x"
   },
   "repository": {
-    "url": "https://github.com/swinton/octochat"
+    "url": "https://github.com/github-developer/octochat-aws"
   },
   "license": "MIT",
   "keywords": [
