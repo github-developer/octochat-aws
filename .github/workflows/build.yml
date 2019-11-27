@@ -1,0 +1,39 @@
+name: Build
+
+on: [pull_request]
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm install, lint, and test
+      run: |
+        npm ci
+        npm run lint
+        npm audit
+        npm test
+      env:
+        CI: true
+      working-directory: app
+
+  build:
+    needs: test
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Build Docker image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t "$GITHUB_REPOSITORY:$IMAGE_TAG" .
