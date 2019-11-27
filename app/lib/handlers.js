@@ -156,7 +156,7 @@ module.exports.completeOauth = async (request, response) => {
 
     request.session.viewData.followers = followers;
     request.session.viewData.user = currentUser.data;
-    
+
     // redirect home
     return response.redirect('/');
   }
