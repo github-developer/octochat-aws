@@ -1,0 +1,71 @@
+/* https://leaverou.github.io/bubbly/ */
+.Box-body {
+  padding: 0;
+  border-bottom: 0px;
+}
+.Box-footer {
+  border-top: 0px;
+}
+.message {
+  position: relative;
+  margin: 10px 36px;
+  background: #c0c0c0;
+  border-radius: 0.4em;
+  max-width: 25%;
+  padding: 5px 10px;
+  color: #fff;
+  font-size: 1.25em;
+  clear: both;
+}
+
+.message.from {
+  text-align: left;
+  float: left;
+  clear: both;
+}
+
+.message.from:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 60%;
+  width: 0;
+  height: 0;
+  border: 20px solid transparent;
+  border-right-color: #c0c0c0;
+  border-left: 0;
+  border-bottom: 0;
+  margin-top: -10px;
+  margin-left: -20px;
+}
+
+.message.to {
+  background: #0366d6;
+  text-align: right;
+  float: right;
+  clear: both;
+}
+
+.message.to:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border: 20px solid transparent;
+  border-left-color: #0366d6;
+  border-right: 0;
+  border-bottom: 0;
+  margin-top: -10px;
+  margin-right: -20px;
+}
+
+.inbox-message{
+  margin: 16px;
+  padding: 5px;
+  border: 1px solid #6a737d;
+}
+.inbox-message .heading{
+  font-weight: bold;
+}

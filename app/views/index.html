@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>{{ title }}</title>
+    <meta name="description" content="Login with GitHub">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="https://s3-eu-west-1.amazonaws.com/octochat.dev/website-assets/favicon-16x16.png">
+
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="https://unpkg.com/@primer/css/dist/primer.css" />
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- import the webpage's client-side javascript file -->
+    <script src="/client.js" defer></script>
+  </head>
+  <body class="m-6">
+
+    {% macro is_from(senderId) %}
+      {% if user.login == senderId %}
+        to
+      {% else %}
+        from
+      {% endif %}
+    {% endmacro %}
+
+    <div class="container-lg clearfix">
+
+      <div class="col-8 float-left">
+
+        <h1>
+          {% if user %}
+
+          👋 Welcome, <a href="https://github.com/{{ user.login }}">@{{ user.login }}</a>
+
+          {% else %}
+
+          😺 Octochat
+
+          {% endif %}
+        </h1>
+
+      </div>
+
+      <div class="float-right">
+
+        {% if user %}
+
+        <form method="get" action="/logout">
+          <button type="submit" class="btn btn-large btn-primary" role="button">Logout</button>
+        </form>
+
+        {% else %}
+
+        <form method="get" action="/login">
+          <button type="submit" class="btn btn-large btn-primary" role="button">Login with GitHub</button>
+        </form>
+
+        {% endif %}
+      </div>
+    </div>
+
+    {% if user %}
+
+    <div class="container-lg clearfix mt-6">
+
+      <div class="Box">
+        <div class="Box-header">
+            <details class="dropdown details-reset details-overlay d-inline-block ml-1">
+            <summary class="btn" aria-haspopup="true">
+              {{ selectedBox if selectedBox else "Inbox" }}
+              <div class="dropdown-caret"></div>
+            </summary>
+            <ul class="dropdown-menu dropdown-menu-se">
+              <li><a class="dropdown-item" href="/">Inbox</a></li>
+              <li><a class="dropdown-item" href="/sent">Sent</a></li>
+            </ul>
+          </details>
+        </div>
+        {% if messages %}
+        <div class="Box-body">
+
+          {% for message in messages %}
+
+          <div class="inbox-message">
+            <div class="heading">
+              {% if selectedBox == 'Inbox' %}
+                From: <a href="https://github.com/{{ message.from }}">@{{ message.from }}</a>
+              {% else %}
+                To: <a href="https://github.com/{{ message.to }}">@{{ message.to }}</a>
+              {% endif %}
+            </div>
+            <div class="body">
+              {{ message.message }}
+            </div>
+            <div class="footer">
+              {{ message.receivedAt }}
+            </div>
+          </div>
+
+          {% endfor %}
+        </div>
+        <div class="Box-footer container">
+          <form method="post" action="/messages" class="d-table width-full">
+            <div class="d-table-cell col-2 pr-2">
+              <select name="follower" class="form-select width-full" aria-label="Important decision" required>
+                <option value="">New message to...</option>
+                {% for follower in followers %}
+                <option value="{{ follower.id }} {{ follower.login }}">{{ follower.login }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="d-table-cell col-9 pr-2">
+              <input class="form-control width-full" name="message" type="text" placeholder="Type a message..." aria-label="Message" required />
+            </div>
+            <div class="d-table-cell">
+              <button class="btn btn-primary width-full col-2" type="submit">
+                Send
+              </button>
+            </div>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+
+    {% endif %}
+
+  </body>
+</html>

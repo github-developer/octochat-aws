@@ -1,0 +1,61 @@
+#!/bin/bash
+# Package a Lambda function and its dependencies for deployment to AWS
+
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+function usage() {
+    if [[ $# -eq 0 ]] ; then
+        echo "$(basename ${0}) <path>"
+        exit 0
+    fi
+}
+
+function build_package() {
+    # Prepare package for deploy
+    source=$(mktemp -d -t pkgsource)
+    dest=$(mktemp -d -t pkgdest)
+
+    # Define requirements.txt
+    if [ -e "Pipfile" ] ; then
+        pipenv lock --requirements > requirements.txt
+    fi
+
+    cp -r "$1" $source
+    cd "$source"
+
+    # Include dependencies defined via requirements.txt
+    if [ -e "requirements.txt" ] ; then
+        pip3 install -r requirements.txt -t . >/dev/null
+    fi
+
+    # Generate .zip file, exlude non-code files
+    excludes=()
+    excludes+=("LICENSE")
+    excludes+=("Pipfile")
+    excludes+=("Pipfile.lock")
+    excludes+=("*.git*")
+    excludes+=("*.zip")
+    excludes+=("*.md")
+    excludes+=("*.txt")
+    excludes+=("script/")
+    excludes+=("script/*")
+    zip -r "${dest}/package.zip" . --exclude ${excludes[@]} >/dev/null
+
+    # Return path to the .zip
+    echo "${dest}/package.zip"
+}
+
+function main() {
+    # Check usage
+    usage "$@"
+
+    path="$1"
+
+    # Build package from path
+    package=$( build_package "${path}" )
+
+    cp "$package" $( dirname "${path}" )
+}
+
+main "$@"

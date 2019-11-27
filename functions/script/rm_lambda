@@ -1,0 +1,37 @@
+#!/bin/bash
+# A wrapper around `aws lambda delete-function` to delete a Lambda function
+
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+function usage() {
+    if [[ $# -eq 0 ]] ; then
+        echo "$(basename ${0}) <function-name>"
+        exit 0
+    fi
+}
+
+function confirm() {
+    # Via https://stackoverflow.com/a/3232082
+
+    # call with a prompt string or use a default
+    read -r -p "${1:-Are you sure? [y/N]} " response
+    case "$response" in
+        [yY][eE][sS]|[yY])
+            true
+            ;;
+        *)
+            false
+            ;;
+    esac
+}
+
+function main() {
+    # Check usage
+    usage "$@"
+
+    # Get confirmation before really deleting
+    confirm && aws lambda delete-function --function-name "$1"
+}
+
+main "$@"

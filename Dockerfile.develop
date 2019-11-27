@@ -1,0 +1,15 @@
+FROM node:12
+
+RUN apt-get update -y && apt-get upgrade -y
+
+RUN mkdir -p /app/.data
+WORKDIR /app
+
+COPY ./app/package*.json ./
+RUN npm install
+
+# Bundle app source
+COPY app .
+
+EXPOSE 8000
+ENTRYPOINT ["npx", "nodemon", "/app/server.js"]

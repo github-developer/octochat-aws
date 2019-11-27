@@ -1,0 +1,42 @@
+#!/bin/bash
+# A wrapper around `aws lambda invoke` to invoke a Lambda function and send its
+# output to STDOUT
+
+# Exit immediately if a command exits with a non-zero status
+set -e
+
+function usage() {
+    if [[ $# -eq 0 ]] ; then
+        echo "$(basename ${0}) <function-name> [<payload>]"
+        exit 0
+    fi
+}
+
+function main() {
+    # Check usage
+    usage "$@"
+
+    # Collect all command line options first
+    opts=()
+
+    # --function-name is required
+    opts+=("--function-name")
+    opts+=("${1}")
+
+    # --payload is optional
+    if [[ $# -eq 2 ]] ; then
+        opts+=("--payload")
+        opts+=("${2}")
+    fi
+
+    # Capture output in a temp file
+    dest=$( mktemp -t output )
+
+    # Invoke function, passing all options
+    aws lambda invoke "${opts[@]}" "${dest}" >/dev/null
+
+    # Read output to stdout
+    cat "${dest}" >/dev/stdout
+}
+
+main "$@"
