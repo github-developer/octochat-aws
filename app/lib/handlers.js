@@ -29,11 +29,7 @@ module.exports.validateMessage = () => {
     body('message')
       .not().isEmpty()
       .trim()
-      .escape(),
-    body('follower')
-      .not().isEmpty()
       .escape()
-      .custom(isFollower)
   ];
 };
 
@@ -44,6 +40,10 @@ module.exports.getRoot = async (request, response) => {
     // expose various parameters to template via viewData
     request.session.viewData.messages = messages;
     request.session.viewData.selectedBox = 'Inbox';
+    // empty out any conversation data
+    delete request.session.viewData.messages;
+    delete request.session.viewData.conversation;
+    delete request.session.viewData.selectedFollower;
   }
 
   // render and send the page
@@ -51,6 +51,26 @@ module.exports.getRoot = async (request, response) => {
     title: process.env.TITLE,
     ...request.session.viewData
   });
+};
+
+module.exports.getConversation = async (request, response) => { 
+  if (request.session.token) {
+    const userId = request.params.userId; // github user id
+    const messages = await model.messagesBetween(request.session.viewData.user.id, userId);
+    
+    // expose authenticated user to template via viewData
+    request.session.viewData.messages = messages;
+    request.session.viewData.conversation = userId;
+    request.session.viewData.selectedFollower = request.session.viewData.followers.find(follower => follower.id == userId);
+
+    // render and send the page
+    response.render("index", {
+      title: process.env.TITLE,
+      ...request.session.viewData
+    });
+  } else {
+    return response.redirect('/');
+  }
 };
 
 module.exports.getSent = async (request, response) => {
@@ -79,14 +99,14 @@ module.exports.postMessage = async (request, response) => {
     response.redirect('/');
   } else {
     await model.messageAdd({
-      toId: follower.split(' ')[0],
-      to: follower.split(' ')[1],
+      toId: request.session.viewData.selectedFollower.id,
+      to: request.session.viewData.selectedFollower.login,
       fromId: request.session.viewData.user.id,
       from: request.session.viewData.user.login,
       message
     });
 
-    response.redirect('back');
+    response.redirect(`/messages/${request.session.viewData.selectedFollower.id}`);
   }
 };
 

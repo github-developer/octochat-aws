@@ -8,4 +8,6 @@ const cleanMessages = (msgs) => {
   });
 };
 
-module.exports = cleanMessages;
+module.exports = {
+  cleanMessages
+};

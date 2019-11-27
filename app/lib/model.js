@@ -1,7 +1,7 @@
 // https://aws.amazon.com/sdk-for-node-js/
 const aws = require('aws-sdk');
 const lambda = new aws.Lambda();
-const cleanMessages = require('../lib/cleanMessages');
+const utilities = require('./utilities');
 
 // Callback to Promise wrapper of lambda.invoke
 const invokeLambda = async (params) => {
@@ -33,7 +33,7 @@ const messagesReceivedList = async (toId) => {
         }`
   };
 
-  return cleanMessages(await invokeLambda(params));
+  return utilities.cleanMessages(await invokeLambda(params));
 };
 
 // list the 50 most recently sent messages
@@ -45,11 +45,23 @@ const messagesSentList = async (fromId) => {
         }`
   };
 
-  return cleanMessages(await invokeLambda(params));
+  return utilities.cleanMessages(await invokeLambda(params));
 };
+
+// get messages between two user ids
+const messagesBetween = async (user1, user2) => {
+  // gather messages from user2 sent to user1
+  const received = (await messagesReceivedList(user1)).filter(msg => msg.fromId == user2);
+  // gather messages to user2 sent by user1
+  const sent = (await messagesSentList(user1)).filter(msg => msg.toId == user2);
+  // combine into one array and sort by received date
+  return [].concat(received, sent).sort((a,b) => new Date(a.receivedAt) - new Date(b.receivedAt));
+};
+
 
 module.exports = {
   messageAdd,
   messagesReceivedList,
-  messagesSentList
+  messagesSentList,
+  messagesBetween
 };
