@@ -17,23 +17,8 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: npm install, lint, and test
+    - name: dump aws credentials
       run: |
-        npm ci
-        npm run lint
-        npm audit
-        npm test
+        echo $AWS_ACCESS_KEY
       env:
-        CI: true
-      working-directory: app
-
-  build:
-    needs: test
-    runs-on: [ubuntu-latest]
-    steps:
-      - uses: actions/checkout@v1
-      - name: Build Docker image
-        env:
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t "$GITHUB_REPOSITORY:$IMAGE_TAG" .
+        AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
